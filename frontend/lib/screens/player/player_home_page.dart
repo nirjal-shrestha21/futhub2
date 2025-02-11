@@ -22,12 +22,13 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
     final token = prefs.getString('token');
     try {
       final response = await http.get(
-        Uri.parse("${AuthService.baseUrl}futsals"),
+        Uri.parse("${AuthService.baseUrl}/futsals/view"),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
       );
+      debugPrint('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
