@@ -1,12 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/auth_service.dart'; // For encoding JSON
 
@@ -67,15 +68,16 @@ class _AddFutsalPageState extends State<AddFutsalPage> {
       setState(() {
         _isLoading = true;
       });
-      String? token = await AuthService().getToken();
-      print(token);
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       if (token == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('You need to log in again.')),
         );
         return;
       }
-      String timeSlot = '${DateFormat('H:mm').format(DateTime(0, 0, 0, _openingTime.hour, _openingTime.minute))} - '
+      String timeSlot =
+          '${DateFormat('H:mm').format(DateTime(0, 0, 0, _openingTime.hour, _openingTime.minute))} - '
           '${DateFormat('H:mm').format(DateTime(0, 0, 0, _closingTime.hour, _closingTime.minute))}';
       _timeSlots.add(timeSlot);
 
@@ -90,7 +92,7 @@ class _AddFutsalPageState extends State<AddFutsalPage> {
       print(data);
 
       try {
-        final uri = Uri.parse('http://localhost:4001/api/futsals/add');
+        final uri = Uri.parse('${AuthService.baseUrl}/futsals/add');
         var response = await http.post(
           uri,
           headers: {
@@ -99,7 +101,6 @@ class _AddFutsalPageState extends State<AddFutsalPage> {
           },
           body: data,
         );
-
         if (response.statusCode == 201) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Futsal details saved successfully!')),
@@ -111,7 +112,8 @@ class _AddFutsalPageState extends State<AddFutsalPage> {
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Something went wrong. Please try again!')),
+          const SnackBar(
+              content: Text('Something went wrong. Please try again!')),
         );
       } finally {
         setState(() {
@@ -120,11 +122,12 @@ class _AddFutsalPageState extends State<AddFutsalPage> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields and upload at least one image.')),
+        const SnackBar(
+            content: Text(
+                'Please fill in all fields and upload at least one image.')),
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +155,8 @@ class _AddFutsalPageState extends State<AddFutsalPage> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
               const SizedBox(height: 16),
-              _buildTextField(_descriptionController, "Description", maxLines: 3),
+              _buildTextField(_descriptionController, "Description",
+                  maxLines: 3),
               const SizedBox(height: 16),
               _buildTextField(
                 _phoneController,
@@ -163,42 +167,44 @@ class _AddFutsalPageState extends State<AddFutsalPage> {
               const SizedBox(height: 16),
               _buildImagePicker(),
               const SizedBox(height: 16),
-              _buildTimePickerRow("Opening Time", _openingTime, () => _selectTime(context, true)),
+              _buildTimePickerRow("Opening Time", _openingTime,
+                  () => _selectTime(context, true)),
               const SizedBox(height: 16),
-              _buildTimePickerRow("Closing Time", _closingTime, () => _selectTime(context, false)),
+              _buildTimePickerRow("Closing Time", _closingTime,
+                  () => _selectTime(context, false)),
               const SizedBox(height: 16),
               _isLoading
                   ? Center(child: CircularProgressIndicator())
                   : Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    colors: [Colors.deepPurpleAccent, Colors.pinkAccent],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      width: double.infinity,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: LinearGradient(
+                          colors: [Colors.deepPurpleAccent, Colors.pinkAccent],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: _saveFutsal,
+                        child: const Text(
+                          'Save Futsal',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  onPressed: _saveFutsal,
-                  child: const Text(
-                    'Save Futsal',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -208,7 +214,9 @@ class _AddFutsalPageState extends State<AddFutsalPage> {
   }
 
   Widget _buildTextField(TextEditingController controller, String label,
-      {TextInputType? keyboardType, int maxLines = 1, List<TextInputFormatter>? inputFormatters}) {
+      {TextInputType? keyboardType,
+      int maxLines = 1,
+      List<TextInputFormatter>? inputFormatters}) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(
@@ -220,7 +228,8 @@ class _AddFutsalPageState extends State<AddFutsalPage> {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       keyboardType: keyboardType,
       maxLines: maxLines,
@@ -240,28 +249,30 @@ class _AddFutsalPageState extends State<AddFutsalPage> {
         ),
         child: _webImages.isNotEmpty || _imageFiles.isNotEmpty
             ? ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: _webImages.isNotEmpty ? _webImages.length : _imageFiles.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image(
-                  image: kIsWeb
-                      ? MemoryImage(_webImages[index])
-                      : FileImage(_imageFiles[index]),
-                  fit: BoxFit.cover,
-                  width: 80,
-                  height: 80,
-                ),
-              ),
-            );
-          },
-        )
+                scrollDirection: Axis.horizontal,
+                itemCount: _webImages.isNotEmpty
+                    ? _webImages.length
+                    : _imageFiles.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image(
+                        image: kIsWeb
+                            ? MemoryImage(_webImages[index])
+                            : FileImage(_imageFiles[index]),
+                        fit: BoxFit.cover,
+                        width: 80,
+                        height: 80,
+                      ),
+                    ),
+                  );
+                },
+              )
             : const Center(
-          child: Icon(Icons.add_a_photo, color: Colors.white, size: 40),
-        ),
+                child: Icon(Icons.add_a_photo, color: Colors.white, size: 40),
+              ),
       ),
     );
   }
