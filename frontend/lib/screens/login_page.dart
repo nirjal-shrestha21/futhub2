@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/auth_service.dart';
 
@@ -26,17 +27,31 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       try {
-        await AuthService()
-            .login(
+        final response = await AuthService().login(
           emailController.text.trim(),
           passwordController.text,
-        )
-            .then((value) {
-          setState(() {
-            _isLoading = false;
-          });
-          debugPrint('Value data: $value');
+        );
+
+        setState(() {
+          _isLoading = false;
         });
+
+        if (response.containsKey('token')) {
+          if (!mounted) return;
+          final prefs = await SharedPreferences.getInstance();
+          final userRole = prefs.getString('userRole');
+          if (userRole == 'player') {
+            Navigator.pushReplacementNamed(context, '/browse_futsals');
+          } else if (userRole == 'futsal_owner') {
+            Navigator.pushReplacementNamed(context, '/futsal_owner_dashboard');
+          } else if (userRole == 'admin') {
+            Navigator.pushReplacementNamed(context, '/admin_dashboard');
+          }
+        } else {
+          setState(() {
+            _errorMessage = response['message'] ?? 'Login failed';
+          });
+        }
       } catch (error) {
         setState(() {
           _isLoading = false;
