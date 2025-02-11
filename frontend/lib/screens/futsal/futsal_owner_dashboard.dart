@@ -1,12 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:flutter/material.dart';
 import 'package:futhub2/screens/futsal/add_futsal.dart';
 import 'package:futhub2/screens/futsal/book_own_futsal_page.dart';
-import 'package:futhub2/screens/futsal/manage_bookings_page.dart';
 import 'package:futhub2/screens/futsal/history_page.dart';
+import 'package:futhub2/screens/futsal/manage_bookings_page.dart';
 import 'package:futhub2/screens/futsal/profile_page.dart';
+import 'package:futhub2/services/auth_service.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FutsalOwnerDashboard extends StatefulWidget {
   const FutsalOwnerDashboard({super.key});
@@ -42,7 +44,7 @@ class _FutsalOwnerDashboardState extends State<FutsalOwnerDashboard> {
       print('Token: $token'); // Debugging token
 
       final response = await http.get(
-        Uri.parse('https://4001/api/futsals/view'),
+        Uri.parse('${AuthService.baseUrl}/futsals/view'),
         headers: {
           'Authorization': 'Bearer $token',
         },

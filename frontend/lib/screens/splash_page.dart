@@ -19,7 +19,9 @@ class _SplashPageState extends State<SplashPage> {
         final userRole = prefs.getString('userRole');
         if (userRole == "player") {
           Navigator.pushReplacementNamed(context, '/browse_futsals');
-        }
+        } else if (userRole == "futsal_owner") {
+          Navigator.pushReplacementNamed(context, '/futsal_owner_dashboard');
+        } else if (userRole == "admin") {}
       }
     });
   }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,14 +19,17 @@ class _BookOwnFutsalPageState extends State<BookOwnFutsalPage> {
   // Function to fetch booking data
   Future<void> fetchBookings() async {
     String? token = await AuthService().getToken();
-    final apiUrl = 'http://localhost:4001/api/bookings';
+    debugPrint('Token: $token');
+    const apiUrl = '${AuthService.baseUrl}/bookings';
     try {
-      final response = await http.get(Uri.parse(apiUrl),headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },);
-      print(response.body);
-
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      debugPrint('Response Body: ${response.body}');
       if (response.statusCode == 200) {
         setState(() {
           bookings = json.decode(response.body);
@@ -67,7 +71,8 @@ class _BookOwnFutsalPageState extends State<BookOwnFutsalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Book Own Futsal', style: TextStyle(color: Colors.white)),
+        title: const Text('Book Own Futsal',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -75,45 +80,84 @@ class _BookOwnFutsalPageState extends State<BookOwnFutsalPage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.orange))
           : bookings.isEmpty
-          ? const Center(
-        child: Text(
-          "No bookings available.",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.orange),
-        ),
-      )
-          : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
-            headingRowColor: MaterialStateColor.resolveWith((states) => Colors.orange),
-            columns: const [
-              DataColumn(label: Text('ID', style: TextStyle(color: Colors.white))),
-              DataColumn(label: Text('Futsal Name', style: TextStyle(color: Colors.white))),
-              DataColumn(label: Text('User Name', style: TextStyle(color: Colors.white))),
-              DataColumn(label: Text('User Email', style: TextStyle(color: Colors.white))),
-              DataColumn(label: Text('Date', style: TextStyle(color: Colors.white))),
-              DataColumn(label: Text('Time Slot', style: TextStyle(color: Colors.white))),
-              DataColumn(label: Text('Payment Method', style: TextStyle(color: Colors.white))),
-              DataColumn(label: Text('Status', style: TextStyle(color: Colors.white))),
-            ],
-            rows: bookings.map((booking) {
-              return DataRow(
-                cells: [
-                  DataCell(Text(booking['_id']?.toString() ?? 'N/A', style: const TextStyle(color: Colors.white))), // Booking ID
-                  DataCell(Text(booking['futsal']?['name']?.toString() ?? 'N/A', style: const TextStyle(color: Colors.white))), // Futsal name
-                  DataCell(Text(booking['user']?['name']?.toString() ?? 'N/A', style: const TextStyle(color: Colors.white))), // User name
-                  DataCell(Text(booking['user']?['email']?.toString() ?? 'N/A', style: const TextStyle(color: Colors.white))), // User email
-                  DataCell(Text(booking['bookingDate'] ?? 'N/A', style: const TextStyle(color: Colors.white))), // Booking Date
-                  DataCell(Text(booking['timeSlot'] ?? 'N/A', style: const TextStyle(color: Colors.white))), // Time Slot
-                  DataCell(Text(booking['paymentMethod'] ?? 'N/A', style: const TextStyle(color: Colors.white))), // Payment Method
-                  DataCell(Text(booking['status'] ?? 'N/A', style: const TextStyle(color: Colors.white))), // Status
-                ],
-              );
-            }).toList(),
-          ),
-        ),
-      ),
+              ? const Center(
+                  child: Text(
+                    "No bookings available.",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.orange),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      headingRowColor: MaterialStateColor.resolveWith(
+                          (states) => Colors.orange),
+                      columns: const [
+                        DataColumn(
+                            label: Text('ID',
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text('Futsal Name',
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text('User Name',
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text('User Email',
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text('Date',
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text('Time Slot',
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text('Payment Method',
+                                style: TextStyle(color: Colors.white))),
+                        DataColumn(
+                            label: Text('Status',
+                                style: TextStyle(color: Colors.white))),
+                      ],
+                      rows: bookings.map((booking) {
+                        return DataRow(
+                          cells: [
+                            DataCell(Text(booking['_id']?.toString() ?? 'N/A',
+                                style: const TextStyle(color: Colors.white))),
+                            // Booking ID
+                            DataCell(Text(
+                                booking['futsal']?['name']?.toString() ?? 'N/A',
+                                style: const TextStyle(color: Colors.white))),
+                            // Futsal name
+                            DataCell(Text(
+                                booking['user']?['name']?.toString() ?? 'N/A',
+                                style: const TextStyle(color: Colors.white))),
+                            // User name
+                            DataCell(Text(
+                                booking['user']?['email']?.toString() ?? 'N/A',
+                                style: const TextStyle(color: Colors.white))),
+                            // User email
+                            DataCell(Text(booking['bookingDate'] ?? 'N/A',
+                                style: const TextStyle(color: Colors.white))),
+                            // Booking Date
+                            DataCell(Text(booking['timeSlot'] ?? 'N/A',
+                                style: const TextStyle(color: Colors.white))),
+                            // Time Slot
+                            DataCell(Text(booking['paymentMethod'] ?? 'N/A',
+                                style: const TextStyle(color: Colors.white))),
+                            // Payment Method
+                            DataCell(Text(booking['status'] ?? 'N/A',
+                                style: const TextStyle(color: Colors.white))),
+                            // Status
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
     );
   }
 }

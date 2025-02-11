@@ -1,7 +1,10 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../services/auth_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -26,9 +29,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _nameController.text = prefs.getString('name') ?? "John Doe";
-      _phoneController.text = prefs.getString('phone') ?? "9876543210";
-      _emailController.text = prefs.getString('email') ?? "johndoe@example.com";
+      _nameController.text = prefs.getString('userName') ?? "John Doe";
+      _phoneController.text = prefs.getString('userPhone') ?? "9876543210";
+      _emailController.text =
+          prefs.getString('userEmail') ?? "johndoe@example.com";
     });
   }
 
@@ -44,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     final response = await http.put(
-      Uri.parse('http://localhost:4001/api/updateProfile'),
+      Uri.parse('${AuthService.baseUrl}/updateProfile'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -53,16 +57,18 @@ class _ProfilePageState extends State<ProfilePage> {
         "name": _nameController.text,
         "email": _emailController.text,
         "phone": _phoneController.text,
-        "password": _passwordController.text.isNotEmpty ? _passwordController.text : null,
+        "password": _passwordController.text.isNotEmpty
+            ? _passwordController.text
+            : null,
       }),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       final updatedUser = jsonDecode(response.body);
 
-      await prefs.setString('name', updatedUser['name']);
-      await prefs.setString('email', updatedUser['email']);
-      await prefs.setString('phone', updatedUser['phone']);
+      await prefs.setString('userName', updatedUser['name']);
+      await prefs.setString('userEmail', updatedUser['email']);
+      await prefs.setString('userPhone', updatedUser['phone']);
 
       if (_passwordController.text.isNotEmpty) {
         await prefs.setString('password', _passwordController.text);
@@ -91,7 +97,8 @@ class _ProfilePageState extends State<ProfilePage> {
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: Icon(_isEditing ? Icons.check : Icons.edit, color: Colors.orange),
+            icon: Icon(_isEditing ? Icons.check : Icons.edit,
+                color: Colors.orange),
             onPressed: () {
               if (_isEditing) {
                 _updateProfile();
@@ -119,7 +126,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     const CircleAvatar(
                       radius: 60,
-                      backgroundImage: AssetImage('assets/profile_placeholder.png'),
+                      backgroundImage:
+                          AssetImage('assets/profile_placeholder.png'),
                     ),
                     Positioned(
                       bottom: 0,
@@ -134,7 +142,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Colors.orange,
                           ),
                           padding: const EdgeInsets.all(6),
-                          child: const Icon(Icons.edit, color: Colors.white, size: 18),
+                          child: const Icon(Icons.edit,
+                              color: Colors.white, size: 18),
                         ),
                       ),
                     ),
@@ -151,7 +160,10 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 20),
               const Text(
                 "Change Password",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange),
               ),
               TextField(
                 controller: _passwordController,
@@ -161,8 +173,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 decoration: const InputDecoration(
                   hintText: "Enter new password",
                   hintStyle: TextStyle(color: Colors.grey),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.orange)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.orange)),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.orange)),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.orange)),
                 ),
               ),
 
@@ -173,13 +187,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                   onPressed: () {
                     _logout(context);
                   },
-                  child: const Text("Logout", style: TextStyle(color: Colors.white, fontSize: 16)),
+                  child: const Text("Logout",
+                      style: TextStyle(color: Colors.white, fontSize: 16)),
                 ),
               ),
             ],
@@ -199,8 +216,10 @@ class _ProfilePageState extends State<ProfilePage> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: Colors.orange),
-          enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.orange)),
-          focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.orange)),
+          enabledBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.orange)),
+          focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.orange)),
         ),
       ),
     );
