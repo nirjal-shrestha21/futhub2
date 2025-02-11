@@ -1,9 +1,11 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'package:futhub2/models/futsal_model.dart';
 import 'package:futhub2/screens/profile/profile_page.dart';
+import 'package:futhub2/services/auth_service.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayerHomePage extends StatefulWidget {
   const PlayerHomePage({super.key});
@@ -18,14 +20,9 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
   Future<List<Futsal>> fetchFutsals() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
-
-    if (token == null || token.isEmpty) {
-      throw Exception("Authentication token is missing. Please log in again.");
-    }
-
     try {
       final response = await http.get(
-        Uri.parse(apiUrl),
+        Uri.parse("${AuthService.baseUrl}futsals"),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -48,7 +45,8 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text('Booking Confirmation', style: TextStyle(color: Colors.orange)),
+        title: const Text('Booking Confirmation',
+            style: TextStyle(color: Colors.orange)),
         content: Text(
           'You have successfully booked ${futsal.location ?? "this futsal"}.',
           style: const TextStyle(color: Colors.white),
@@ -72,14 +70,18 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: SideMenu(onPageSelected: (Widget page) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
-      }, onLogout: () => _logout(context)),
+      drawer: SideMenu(
+          onPageSelected: (Widget page) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => page));
+          },
+          onLogout: () => _logout(context)),
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         title: const Text(
           'FUTHUB',
-          style: TextStyle(color: Colors.orange, fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Colors.orange, fontSize: 24, fontWeight: FontWeight.bold),
         ),
         backgroundColor: const Color(0xFF1E1E1E),
         iconTheme: const IconThemeData(color: Colors.orange),
@@ -103,7 +105,8 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
         future: fetchFutsals(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Colors.orange));
+            return const Center(
+                child: CircularProgressIndicator(color: Colors.orange));
           } else if (snapshot.hasError) {
             return Center(
               child: Text(
@@ -160,7 +163,9 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
                         children: [
                           Text(
                             '\$${futsal.price ?? 'N/A'}',
-                            style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 8),
                           ElevatedButton(
@@ -171,7 +176,8 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: const Text('Book', style: TextStyle(color: Colors.white)),
+                            child: const Text('Book',
+                                style: TextStyle(color: Colors.white)),
                           ),
                         ],
                       ),
@@ -190,6 +196,7 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
 class SideMenu extends StatelessWidget {
   final Function(Widget) onPageSelected;
   final VoidCallback onLogout;
+
   const SideMenu({required this.onPageSelected, required this.onLogout});
 
   @override
@@ -201,17 +208,22 @@ class SideMenu extends StatelessWidget {
           const DrawerHeader(
             child: Text(
               'FUTHUB',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.orange),
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange),
             ),
           ),
           ListTile(
             leading: const Icon(Icons.sports_soccer, color: Colors.orange),
-            title: const Text('Available Futsal', style: TextStyle(color: Colors.white)),
+            title: const Text('Available Futsal',
+                style: TextStyle(color: Colors.white)),
             onTap: () => onPageSelected(PlayerHomePage()),
           ),
           ListTile(
             leading: const Icon(Icons.history, color: Colors.orange),
-            title: const Text('Booking History', style: TextStyle(color: Colors.white)),
+            title: const Text('Booking History',
+                style: TextStyle(color: Colors.white)),
             onTap: () => onPageSelected(BookingHistoryPage()),
           ),
           const Divider(color: Colors.grey),
@@ -232,11 +244,13 @@ class BookingHistoryPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: const Text('Booking History', style: TextStyle(color: Colors.orange)),
+        title: const Text('Booking History',
+            style: TextStyle(color: Colors.orange)),
         backgroundColor: const Color(0xFF1E1E1E),
       ),
       body: const Center(
-        child: Text('Booking History Page', style: TextStyle(color: Colors.white)),
+        child:
+            Text('Booking History Page', style: TextStyle(color: Colors.white)),
       ),
     );
   }

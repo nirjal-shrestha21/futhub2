@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -25,31 +26,17 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       try {
-        final response = await AuthService().login(
+        await AuthService()
+            .login(
           emailController.text.trim(),
           passwordController.text,
-        );
-
-        setState(() {
-          _isLoading = false;
-        });
-
-        if (response.containsKey('token')) {
-          final userRole = response['user']['role'];
-          if (userRole == 'admin') {
-            Navigator.pushReplacementNamed(context, '/Admin Dashboard');
-          } else if (userRole == 'futsal_owner') {
-            Navigator.pushReplacementNamed(context, '/Futsal Owner Dashboard');
-          } else if (userRole == 'player') {
-            Navigator.pushReplacementNamed(context, '/futsal-details');
-          } else {
-            throw Exception('Invalid user role: $userRole');
-          }
-        } else {
+        )
+            .then((value) {
           setState(() {
-            _errorMessage = response['message'] ?? 'Unexpected error occurred';
+            _isLoading = false;
           });
-        }
+          debugPrint('Value data: $value');
+        });
       } catch (error) {
         setState(() {
           _isLoading = false;

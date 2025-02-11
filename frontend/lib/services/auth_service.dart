@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://localhost:4001/api/auth';
+  static const String baseUrl = 'http://192.168.31.138:4001/api';
 
   // Register function
   Future<Map<String, dynamic>> register({
@@ -13,7 +14,7 @@ class AuthService {
     required String role,
     required String phone,
   }) async {
-    final url = Uri.parse('$baseUrl/register');
+    final url = Uri.parse('$baseUrl/auth/register');
 
     // Create request body
     final body = json.encode({
@@ -50,40 +51,46 @@ class AuthService {
 
   // Login function
   Future<Map<String, dynamic>> login(String email, String password) async {
-    final url = Uri.parse('$baseUrl/login');
+    final url = Uri.parse('$baseUrl/auth/login');
 
-    // Create request body
+    // Create request body and encode it as JSON
     final body = json.encode({
       'email': email,
       'password': password,
     });
 
     try {
-      // Send POST request
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: body,
+        body: body, // Send the JSON encoded body
       );
 
-      // Check if response is successful
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        // Save token to shared_preferences
         final prefs = await SharedPreferences.getInstance();
+        // Save all user data
         await prefs.setString('token', data['token']);
+        await prefs.setString('userId', data['user']['id']);
+        await prefs.setString('userName', data['user']['name']);
+        await prefs.setString('userEmail', data['user']['email']);
+        await prefs.setString('userRole', data['user']['role']);
+        await prefs.setString('userPhone', data['user']['phone']);
+        await prefs.setString(
+            'userProfilePicture', data['user']['profilePicture']);
+
         return data;
       } else {
-        // Return error message
-        return {'message': 'Invalid email or password'};
+        final errorData = json.decode(response.body);
+        return {'message': errorData['message'] ?? 'Invalid email or password'};
       }
     } catch (error) {
-      // Handle errors (e.g., no internet connection)
       return {'message': 'Something went wrong, try again later'};
     }
   }
+
   // Fetch the token
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -94,5 +101,18 @@ class AuthService {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
+  }
+
+  // Add this new method to AuthService
+  Future<Map<String, String?>> getUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+      'id': prefs.getString('userId'),
+      'name': prefs.getString('userName'),
+      'email': prefs.getString('userEmail'),
+      'role': prefs.getString('userRole'),
+      'phone': prefs.getString('userPhone'),
+      'profilePicture': prefs.getString('userProfilePicture'),
+    };
   }
 }

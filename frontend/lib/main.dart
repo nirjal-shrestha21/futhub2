@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:futhub2/screens/splash_page.dart';
+
 import 'pages.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // await WebViewPlatform.instance!.initialize();
   runApp(const MyApp());
@@ -14,23 +15,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       title: 'Futhub2',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      // Define the routes within the MaterialApp widget
       routes: {
-        '/': (context) => const LandingPage(),
+        '/': (context) => const SplashPage(),
+        '/landing': (context) => const LandingPage(),
         '/register': (context) => const RegisterPage(),
         '/login': (context) => const LoginPage(),
         '/Admin Dashboard': (context) => const AdminDashboard(),
         '/admin-players': (context) => const AdminPlayersPage(),
-        '/Futsal Owner Dashboard': (context) => const FutsalOwnerDashboard(),
+        '/futsal_owner_dashboard': (context) => const FutsalOwnerDashboard(),
         '/add-futsal': (context) => const AddFutsalPage(),
-        '/Browse Futsals': (context) => const PlayerHomePage(),
+        '/browse_futsals': (context) => const PlayerHomePage(),
         '/futsal-details': (context) => const FutsalDetailsPage(),
         '/payment': (context) => const PaymentPage(),
         '/player-team-search': (context) => const PlayerTeamSearchPage(),
@@ -41,7 +41,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
