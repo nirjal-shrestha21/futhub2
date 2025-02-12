@@ -72,19 +72,15 @@ class _FutsalOwnerDashboardState extends State<FutsalOwnerDashboard> {
     }
   }
 
-  Future<String> _getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token') ?? '';
-  }
-
   @override
   Widget build(BuildContext context) {
-    int totalBookings = futsals.fold<int>(0,
-        (int sum, futsal) => sum + ((futsal['bookings']?.length ?? 0) as int));
-    int availableSlots = futsals.fold<int>(
-        0, (int sum, futsal) => sum + ((futsal['availableSlots'] ?? 0) as int));
-    int upcomingMatches = futsals.fold<int>(0,
-        (int sum, futsal) => sum + ((futsal['upcomingMatches'] ?? 0) as int));
+    int totalBookings = futsals.length; // Total number of booking records
+    
+    // Get unique futsal IDs to count total futsals
+    Set<String> uniqueFutsalIds = futsals
+        .map((booking) => booking['futsalId']['_id'].toString())
+        .toSet();
+    int totalFutsals = uniqueFutsalIds.length;
 
     return Scaffold(
       appBar: AppBar(
@@ -183,9 +179,7 @@ class _FutsalOwnerDashboardState extends State<FutsalOwnerDashboard> {
                             _buildAnalyticsCard(
                                 "Total Bookings", totalBookings.toString()),
                             _buildAnalyticsCard(
-                                "Available Slots", availableSlots.toString()),
-                            _buildAnalyticsCard(
-                                "Upcoming Matches", upcomingMatches.toString()),
+                                "Total Futsals", totalFutsals.toString()),
                           ],
                         ),
                       ),
