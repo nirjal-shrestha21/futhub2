@@ -27,14 +27,15 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const RegisterPage(),
         '/login': (context) => const LoginPage(),
         '/admin_dashboard': (context) => const AdminDashboard(),
-        '/admin_players': (context) => const AdminPlayersPage(),
+        '/admin-players': (context) => const AdminPlayersPage(),
         '/futsal_owner_dashboard': (context) => const FutsalOwnerDashboard(),
         '/add_futsal': (context) => const AddFutsalPage(),
         '/browse_futsals': (context) => const PlayerHomePage(),
         '/futsal_details': (context) => const FutsalDetailsPage(),
         '/payment': (context) => const PaymentPage(),
         '/player-team-search': (context) => const PlayerTeamSearchPage(),
-        '/player_booking_details': (context) => const PlayerBookingDetailsPage(),
+        '/player_booking_details': (context) =>
+            const PlayerBookingDetailsPage(),
       },
       //home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
