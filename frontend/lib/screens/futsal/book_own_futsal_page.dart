@@ -29,7 +29,7 @@ class _BookOwnFutsalPageState extends State<BookOwnFutsalPage> {
           'Authorization': 'Bearer $token',
         },
       );
-      debugPrint('Response Body: ${response.body}');
+      debugPrint('Response data: ${response.body}');
       if (response.statusCode == 200) {
         setState(() {
           bookings = json.decode(response.body);
@@ -128,8 +128,7 @@ class _BookOwnFutsalPageState extends State<BookOwnFutsalPage> {
                             DataCell(Text(booking['_id']?.toString() ?? 'N/A',
                                 style: const TextStyle(color: Colors.white))),
                             // Booking ID
-                            DataCell(Text(
-                                booking['futsal']?['name']?.toString() ?? 'N/A',
+                            DataCell(Text(booking['name']?.toString() ?? 'N/A',
                                 style: const TextStyle(color: Colors.white))),
                             // Futsal name
                             DataCell(Text(

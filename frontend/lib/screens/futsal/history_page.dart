@@ -34,7 +34,8 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Booking History', style: TextStyle(color: Colors.white)),
+        title: const Text('Booking History',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -56,12 +57,15 @@ class _HistoryPageState extends State<HistoryPage> {
                     return Card(
                       color: Colors.grey[900],
                       elevation: 3,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       child: ListTile(
-                        leading: const Icon(Icons.history, color: Colors.orange),
+                        leading:
+                            const Icon(Icons.history, color: Colors.orange),
                         title: Text(
                           booking['futsal']!,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
                           'Date: ${booking['date']} | Time: ${booking['time']}',
