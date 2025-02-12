@@ -1,12 +1,14 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:futhub2/models/user_model.dart';
+
 import 'package:futhub2/models/futsal_model.dart';
 import 'package:futhub2/models/team_request_model.dart';
+import 'package:futhub2/models/user_model.dart';
+import 'package:futhub2/services/auth_service.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  final String baseUrl = 'http://127.0.0.1:4001/api'; // Backend API URL
+  static String baseUrl = AuthService.baseUrl; // Backend API URL
 
   // Fetch the stored token
   Future<String?> _getToken() async {

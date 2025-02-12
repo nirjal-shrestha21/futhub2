@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
-import '../../services/auth_service.dart';  // Import http package
+import '../../services/auth_service.dart'; // Import http package
 
 class PaymentPage extends StatefulWidget {
   const PaymentPage({super.key});
@@ -37,7 +37,7 @@ class _PaymentPageState extends State<PaymentPage> {
     setState(() {
       selectedDate = pickedDate;
     });
-    }
+  }
 
   // Function to call the API
   Future<void> makePayment(String paymentMethod) async {
@@ -48,20 +48,17 @@ class _PaymentPageState extends State<PaymentPage> {
 
     final futsalId = ModalRoute.of(context)?.settings.arguments as String?;
 
-    // Example API endpoint
-    final apiUrl = 'http://127.0.0.1:4001/api/bookings';
+    const apiUrl = '${AuthService.baseUrl}/bookings';
     String? token = await AuthService().getToken();
-    print(token);
-    print(futsalId);
     final data = json.encode({
       'futsalId': futsalId ?? '',
       'paymentMethod': paymentMethod,
       'bookingDate': DateFormat('yyyy-MM-dd').format(selectedDate!),
       'timeSlot': selectedTimeSlot!,
-      'status':'confirmed'
-
+      'status': 'confirmed'
     });
 
+    debugPrint('Data: $data');
     final response = await http.post(
       Uri.parse(apiUrl),
       headers: {
@@ -81,17 +78,20 @@ class _PaymentPageState extends State<PaymentPage> {
           backgroundColor: Colors.green,
         ),
       );
-      // Handle successful payment response here (e.g., show a success message or navigate to another screen)
     } else {
-      print('Payment failed');
-      // Handle failure (e.g., show an error message)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(response.body),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   void _showErrorSnackbar() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text("Please select a booking date and time slot."),
+        content: Text("Booking already exists for this time slot"),
         backgroundColor: Colors.red,
       ),
     );
@@ -117,7 +117,8 @@ class _PaymentPageState extends State<PaymentPage> {
             InkWell(
               onTap: _selectDate,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(10),
@@ -176,13 +177,15 @@ class _PaymentPageState extends State<PaymentPage> {
             const SizedBox(height: 20),
             _buildPaymentButton(
               label: "Pay with eSewa",
-              imageUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAACUCAMAAABV5TcGAAAAsVBMVEX///9gu0coKT0AAABdukP8/P0lJjsAACAhIjgdHjWpqa9buUAaGzMqKz4AACPy8vMAABwGCSnc3N7Q0NO9vcFdXWrl5ecAAAoAACbG5b+xsbZJtCdWuDkAABjGxsqamqGw2qWKipL2+/UPES2RzYM0NUYAABLQ6cp3d4Fsv1Zvb3k9Pk5ywV5ISFbq9ehRUl+JynrZ7dW637Kf05N8xWk+sRJ/f38ZGSsTEylERERPT1HtBU3YAAALoklEQVR4nO2ba5uiuBaFEQEDBJGrFCKIiGWBiFrWmT7n//+wk3AzRLRmpsuZqZ68H/ppEShY7Oy9sokcx2AwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaD8c9ijfkD++uIp13M38r65f2yr7gcV6+/QxNXycoCUWaRiT9b9i+jzPq8HwmCqqrNP8Lo+Pr4CDcDACbe1EugLIM01s2idP+ai302h80iQAqQCOoieH8QIj5MQGKUu3jnQEOWQDIxkuKXkOPwjsQY3SIsFuc7gojRFMi8ItafLEcGGs+D/BeQY/0qBANa1Cz2p6FjRCWRYElkCj+FPC/x31+Ow+pjKDJa1GAoQEIN9NRAAZJDXkq+vRyH4+KBGHjEBO8H+iDdSSQ57G+zNZlfWn/VZT+J0+X+QOn02FB6iP5SS3ZUURWjhN9SEn03Thf1MzVwjaH00FPAT336XG6WTHzxL7v0J3A40moIahDcKCRQFdeaa5J0Gwh2Oom+sxzr9/5IUReLYH/c7IMFrUhwJo+Lprxc3KYJPdvG31mOl14WDT5G5wOOgjX3+kbn1wU5XBzIy6V5e77I231jOQ497xUcyTteUXqoI+LLXNZAOlBE3LL4xpMWcqgIoxcUFofV8biqVXmlfOqCGC65jCzGUBH5T/l95TgQAaBi87l+/wiCYIGFQbyolB7XIwuZ5weLyPcVg+MIx6G+odnrujFkqlr5cjrPBqvuSCfRNJh9ewfagwwOYcURYyc4VmX1tO/VF+GaPWKP5/nkxnh8a4iHr+L7J+6+KSOrfngIL+2h9hbJIef233btT2AkXJ87vtHVtd/xUafN17de9hCO7aEuloOHufJ3XfvXQ4wVdY83bHAsIE+6+AgudXRQnlXYt9ZUR8YD66Htfpn8QYyEKkkeLovFx2K/Wb0eDs1tncHiZ2P//Mno7UtZf77U0xWzxlGei3lgBzcYAAkZaFbzywF1PQQ2TT31mH5M1N2dRz0TATf7wAEAAAAElFTkSuQmCC',
+              imageUrl:
+                  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAACUCAMAAABV5TcGAAAAsVBMVEX///9gu0coKT0AAABdukP8/P0lJjsAACAhIjgdHjWpqa9buUAaGzMqKz4AACPy8vMAABwGCSnc3N7Q0NO9vcFdXWrl5ecAAAoAACbG5b+xsbZJtCdWuDkAABjGxsqamqGw2qWKipL2+/UPES2RzYM0NUYAABLQ6cp3d4Fsv1Zvb3k9Pk5ywV5ISFbq9ehRUl+JynrZ7dW637Kf05N8xWk+sRJ/f38ZGSsTEylERERPT1HtBU3YAAALoklEQVR4nO2ba5uiuBaFEQEDBJGrFCKIiGWBiFrWmT7n//+wk3AzRLRmpsuZqZ68H/ppEShY7Oy9sokcx2AwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaD8c9ijfkD++uIp13M38r65f2yr7gcV6+/QxNXycoCUWaRiT9b9i+jzPq8HwmCqqrNP8Lo+Pr4CDcDACbe1EugLIM01s2idP+ai302h80iQAqQCOoieH8QIj5MQGKUu3jnQEOWQDIxkuKXkOPwjsQY3SIsFuc7gojRFMi8ItafLEcGGs+D/BeQY/0qBANa1Cz2p6FjRCWRYElkCj+FPC/x31+Ow+pjKDJa1GAoQEIN9NRAAZJDXkq+vRyH4+KBGHjEBO8H+iDdSSQ57G+zNZlfWn/VZT+J0+X+QOn02FB6iP5SS3ZUURWjhN9SEn03Thf1MzVwjaH00FPAT336XG6WTHzxL7v0J3A40moIahDcKCRQFdeaa5J0Gwh2Oom+sxzr9/5IUReLYH/c7IMFrUhwJo+Lprxc3KYJPdvG31mOl14WDT5G5wOOgjX3+kbn1wU5XBzIy6V5e77I231jOQ497xUcyTteUXqoI+LLXNZAOlBE3LL4xpMWcqgIoxcUFofV8biqVXmlfOqCGC65jCzGUBH5T/l95TgQAaBi87l+/wiCYIGFQbyolB7XIwuZ5weLyPcVg+MIx6G+odnrujFkqlr5cjrPBqvuSCfRNJh9ewfagwwOYcURYyc4VmX1tO/VF+GaPWKP5/nkxnh8a4iHr+L7J+6+KSOrfngIL+2h9hbJIef233btT2AkXJ87vtHVtd/xUafN17de9hCO7aEuloOHufJ3XfvXQ4wVdY83bHAsIE+6+AgudXRQnlXYt9ZUR8YD66Htfpn8QYyEKkkeLovFx2K/Wb0eDs1tncHiZ2P//Mno7UtZf77U0xWzxlGei3lgBzcYAAkZaFbzywF1PQQ2TT31mH5M1N2dRz0TATf7wAEAAAAElFTkSuQmCC',
               paymentMethod: 'eSewa',
             ),
             const SizedBox(height: 20),
             _buildPaymentButton(
               label: "Pay with Khalti",
-              imageUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAACUCAMAAABV5TcGAAAAsVBMVEX///9gu0coKT0AAABdukP8/P0lJjsAACAhIjgdHjWpqa9buUAaGzMqKz4AACPy8vMAABwGCSnc3N7Q0NO9vcFdXWrl5ecAAAoAACbG5b+xsbZJtCdWuDkAABjGxsqamqGw2qWKipL2+/UPES2RzYM0NUYAABLQ6cp3d4Fsv1Zvb3k9Pk5ywV5ISFbq9ehRUl+JynrZ7dW637Kf05N8xWk+sRJ/f38ZGSsTEylERERPT1HtBU3YAAALoklEQVR4nO2ba5uiuBaFEQEDBJGrFCKIiGWBiFrWmT7n//+wk3AzRLRmpsuZqZ68H/ppEShY7Oy9sokcx2AwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaD8c9ijfkD++uIp13M38r65f2yr7gcV6+/QxNXycoCUWaRiT9b9i+jzPq8HwmCqqrNP8Lo+Pr4CDcDACbe1EugLIM01s2idP+ai302h80iQAqQCOoieH8QIj5MQGKUu3jnQEOWQDIxkuKXkOPwjsQY3SIsFuc7gojRFMi8ItafLEcGGs+D/BeQY/0qBANa1Cz2p6FjRCWRYElkCj+FPC/x31+Ow+pjKDJa1GAoQEIN9NRAAZJDXkq+vRyH4+KBGHjEBO8H+iDdSSQ57G+zNZlfWn/VZT+J0+X+QOn02FB6iP5SS3ZUURWjhN9SEn03Thf1MzVwjaH00FPAT336XG6WTHzxL7v0J3A40moIahDcKCRQFdeaa5J0Gwh2Oom+sxzr9/5IUReLYH/c7IMFrUhwJo+Lprxc3KYJPdvG31mOl14WDT5G5wOOgjX3+kbn1wU5XBzIy6V5e77I231jOQ497xUcyTteUXqoI+LLXNZAOlBE3LL4xpMWcqgIoxcUFofV8biqVXmlfOqCGC65jCzGUBH5T/l95TgQAaBi87l+/wiCYIGFQbyolB7XIwuZ5weLyPcVg+MIx6G+odnrujFkqlr5cjrPBqvuSCfRNJh9ewfagwwOYcURYyc4VmX1tO/VF+GaPWKP5/nkxnh8a4iHr+L7J+6+KSOrfngIL+2h9hbJIef233btT2AkXJ87vtHVtd/xUafN17de9hCO7aEuloOHufJ3XfvXQ4wVdY83bHAsIE+6+AgudXRQnlXYt9ZUR8YD66Htfpn8QYyEKkkeLovFx2K/Wb0eDs1tncHiZ2P//Mno7UtZf77U0xWzxlGei3lgBzcYAAkZaFbzywF1PQQ2TT31mH5M1N2dRz0TATf7wAEAAAAElFTkSuQmCC',
+              imageUrl:
+                  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAACUCAMAAABV5TcGAAAAsVBMVEX///9gu0coKT0AAABdukP8/P0lJjsAACAhIjgdHjWpqa9buUAaGzMqKz4AACPy8vMAABwGCSnc3N7Q0NO9vcFdXWrl5ecAAAoAACbG5b+xsbZJtCdWuDkAABjGxsqamqGw2qWKipL2+/UPES2RzYM0NUYAABLQ6cp3d4Fsv1Zvb3k9Pk5ywV5ISFbq9ehRUl+JynrZ7dW637Kf05N8xWk+sRJ/f38ZGSsTEylERERPT1HtBU3YAAALoklEQVR4nO2ba5uiuBaFEQEDBJGrFCKIiGWBiFrWmT7n//+wk3AzRLRmpsuZqZ68H/ppEShY7Oy9sokcx2AwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaD8c9ijfkD++uIp13M38r65f2yr7gcV6+/QxNXycoCUWaRiT9b9i+jzPq8HwmCqqrNP8Lo+Pr4CDcDACbe1EugLIM01s2idP+ai302h80iQAqQCOoieH8QIj5MQGKUu3jnQEOWQDIxkuKXkOPwjsQY3SIsFuc7gojRFMi8ItafLEcGGs+D/BeQY/0qBANa1Cz2p6FjRCWRYElkCj+FPC/x31+Ow+pjKDJa1GAoQEIN9NRAAZJDXkq+vRyH4+KBGHjEBO8H+iDdSSQ57G+zNZlfWn/VZT+J0+X+QOn02FB6iP5SS3ZUURWjhN9SEn03Thf1MzVwjaH00FPAT336XG6WTHzxL7v0J3A40moIahDcKCRQFdeaa5J0Gwh2Oom+sxzr9/5IUReLYH/c7IMFrUhwJo+Lprxc3KYJPdvG31mOl14WDT5G5wOOgjX3+kbn1wU5XBzIy6V5e77I231jOQ497xUcyTteUXqoI+LLXNZAOlBE3LL4xpMWcqgIoxcUFofV8biqVXmlfOqCGC65jCzGUBH5T/l95TgQAaBi87l+/wiCYIGFQbyolB7XIwuZ5weLyPcVg+MIx6G+odnrujFkqlr5cjrPBqvuSCfRNJh9ewfagwwOYcURYyc4VmX1tO/VF+GaPWKP5/nkxnh8a4iHr+L7J+6+KSOrfngIL+2h9hbJIef233btT2AkXJ87vtHVtd/xUafN17de9hCO7aEuloOHufJ3XfvXQ4wVdY83bHAsIE+6+AgudXRQnlXYt9ZUR8YD66Htfpn8QYyEKkkeLovFx2K/Wb0eDs1tncHiZ2P//Mno7UtZf77U0xWzxlGei3lgBzcYAAkZaFbzywF1PQQ2TT31mH5M1N2dRz0TATf7wAEAAAAElFTkSuQmCC',
               paymentMethod: 'Khalti',
             ),
           ],
@@ -192,7 +195,9 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   Widget _buildPaymentButton(
-      {required String label, required String imageUrl, required String paymentMethod}) {
+      {required String label,
+      required String imageUrl,
+      required String paymentMethod}) {
     return ElevatedButton(
       onPressed: () {
         makePayment(paymentMethod);
