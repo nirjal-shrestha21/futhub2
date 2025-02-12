@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateToken, checkFutsalOwner, checkPlayer } from '../middleware/authMiddleware.js';
-import { addFutsal, editFutsal, deleteFutsal, getFutsals, getFutsalDetails } from '../controllers/futsalController.js';
+import { addFutsal, editFutsal, deleteFutsal, getFutsals, getFutsalDetails, getAllFutsalsByOwner } from '../controllers/futsalController.js';
 
 const router = express.Router();
 
@@ -8,6 +8,7 @@ const router = express.Router();
 router.post('/add', authenticateToken, checkFutsalOwner, addFutsal);
 router.put('/edit/:futsalId', authenticateToken, checkFutsalOwner, editFutsal);
 router.delete('/delete/:futsalId', authenticateToken, checkFutsalOwner, deleteFutsal);
+router.get('/view-futals', authenticateToken, checkFutsalOwner, getAllFutsalsByOwner);
 
 // View all futsals (For Player)
 router.get('/view', authenticateToken, checkPlayer, getFutsals);

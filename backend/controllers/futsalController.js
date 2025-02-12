@@ -57,6 +57,24 @@ export const deleteFutsal = async (req, res) => {
   }
 };
 
+
+
+export const getAllFutsalsByOwner = async (req, res) => {
+  try {
+    console.log("User ID:",req.user._id);
+    const futsal = await Futsal.find({owner:req.user._id});
+
+    if (!futsal) return res.status(404).json({ message: 'No Futsal Found' });
+    console.log("Futals Muji:",futsal);
+
+    res.status(200).json({message:"All Futals",futsals: futsal});
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting futsal', error: err.message });
+  }
+};
+
+
+
 // -- Player --
 // Get All Futsals
 export const getFutsals = async (req, res) => {
