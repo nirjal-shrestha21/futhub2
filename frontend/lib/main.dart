@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         '/landing': (context) => const LandingPage(),
         '/register': (context) => const RegisterPage(),
         '/login': (context) => const LoginPage(),
-        '/Admin Dashboard': (context) => const AdminDashboard(),
+        '/admin_dashboard': (context) => const AdminDashboard(),
         '/admin-players': (context) => const AdminPlayersPage(),
         '/futsal_owner_dashboard': (context) => const FutsalOwnerDashboard(),
         '/add-futsal': (context) => const AddFutsalPage(),

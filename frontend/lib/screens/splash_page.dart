@@ -22,7 +22,9 @@ class _SplashPageState extends State<SplashPage> {
           Navigator.pushReplacementNamed(context, '/browse_futsals');
         } else if (userRole == "futsal_owner") {
           Navigator.pushReplacementNamed(context, '/futsal_owner_dashboard');
-        } else if (userRole == "admin") {}
+        } else if (userRole == "admin") {
+          Navigator.pushReplacementNamed(context, '/admin_dashboard');
+        }
       }
     });
   }

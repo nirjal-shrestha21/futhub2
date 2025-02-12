@@ -160,7 +160,8 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
                                             horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
                                           color: Colors.grey[800],
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                         ),
                                         child: Text(
                                           slot,
@@ -187,14 +188,19 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
                           ),
                           const SizedBox(height: 8),
                           ElevatedButton(
-                            onPressed: () => _onFutsalBooked(futsal),
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/futsal-details',
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.orange,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: const Text('Book',
+                            child: const Text('View',
                                 style: TextStyle(color: Colors.white)),
                           ),
                         ],

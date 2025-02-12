@@ -30,21 +30,23 @@ class _FutsalOwnerDashboardState extends State<FutsalOwnerDashboard> {
 
   @override
   void initState() {
-    super.initState();
     fetchFutsals();
+
+    super.initState();
   }
 
   Future<void> fetchFutsals() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    debugPrint('Token Data: $token');
     setState(() {
       isLoading = true;
     });
 
     try {
-      final token = await _getToken();
-      print('Token: $token'); // Debugging token
-
       final response = await http.get(
-        Uri.parse('${AuthService.baseUrl}/futsals/view'),
+        Uri.parse('${AuthService.baseUrl}/bookings'),
         headers: {
           'Authorization': 'Bearer $token',
         },
