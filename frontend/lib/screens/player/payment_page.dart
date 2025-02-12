@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:futhub2/services/khalti_services.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:khalti_flutter/khalti_flutter.dart';
 
 import '../../services/auth_service.dart'; // Import http package
 
@@ -200,7 +202,21 @@ class _PaymentPageState extends State<PaymentPage> {
       required String paymentMethod}) {
     return ElevatedButton(
       onPressed: () {
-        makePayment(paymentMethod);
+        // makePayment(paymentMethod);
+        debugPrint('Payment method: $paymentMethod');
+        KhaltiRepository().makePayment(
+          context: context,
+          amount: 2000,
+          productIdentity: "khalti",
+          productName: "Futsal",
+          onSuccess: (PaymentSuccessModel response) {
+            debugPrint('Payment success: $response');
+          },
+          onFailure: (PaymentFailureModel response) {
+            debugPrint('Payment failure: $response');
+          },
+          onCancel: () {},
+        );
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.deepPurple,
