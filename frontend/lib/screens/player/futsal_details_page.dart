@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/futsal_model.dart';
@@ -20,7 +19,9 @@ class _FutsalDetailsPageState extends State<FutsalDetailsPage> {
   List<dynamic> futsalList = [];
 
   final List<String> imageUrls = [
-    'https://media.istockphoto.com/id/921045790/photo/football-futsal-training-for-children-indoor-soccer-young-player-with-a-soccer-ball-in-a.jpg?s=612x612&w=0&k=20&c=TWT-3iKfgGR7WCNg2ROyTehCf9hxF-zsfEu-z3hw33Q=',
+    'assets/f1.jpeg',
+    'assets/f2.jpeg',
+    'assets/f3.jpeg',
   ];
   int _currentImageIndex = 0;
 
@@ -84,22 +85,9 @@ class _FutsalDetailsPageState extends State<FutsalDetailsPage> {
                       });
                     },
                     itemBuilder: (context, index) {
-                      debugPrint("Image ${imageUrls[index]}");
-                      return CachedNetworkImage(
-                        imageUrl: imageUrls[index],
+                      return Image.asset(
+                        imageUrls[index],
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.orange,
-                          ),
-                        ),
-                        errorWidget: (context, url, error) => const Center(
-                          child: Icon(
-                            Icons.error_outline,
-                            color: Colors.orange,
-                            size: 50,
-                          ),
-                        ),
                       );
                     },
                   ),
@@ -135,13 +123,12 @@ class _FutsalDetailsPageState extends State<FutsalDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Name and Price Section
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: Text(
-                          widget.futsal!.name ?? 'Unknown Futsal',
+                          widget.futsal?.name ?? 'Unknown Futsal',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 24,
