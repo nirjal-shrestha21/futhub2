@@ -444,7 +444,37 @@ class PlayersListPage extends StatelessWidget {
                       style: const TextStyle(color: Colors.white70)),
                   // Optionally, navigate to a detailed view if needed.
                   onTap: () {
-                    // Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetailsPage(userId: player.id)));
+                    // Show owner details in a modal bottom sheet
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: const Color(0xFF1E1E1E),
+                      builder: (context) => Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Player Details',
+                              style: const TextStyle(
+                                color: Colors.orange,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text('ID: ${player.id}',
+                                style: const TextStyle(color: Colors.white)),
+                            Text('Name: ${player.name}',
+                                style: const TextStyle(color: Colors.white)),
+                            Text('Email: ${player.email}',
+                                style: const TextStyle(color: Colors.white)),
+                            Text('Phone: ${player.phoneNumber}',
+                                style: const TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    );
                   },
                 );
               },
