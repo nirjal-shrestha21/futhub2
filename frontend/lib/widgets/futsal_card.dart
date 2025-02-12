@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../models/futsal_model.dart';
 
-
 class FutsalCard extends StatelessWidget {
   final Futsal futsal;
   final VoidCallback onTap;
 
   // Constructor
-  const FutsalCard({super.key, 
+  const FutsalCard({
+    super.key,
     required this.futsal,
     required this.onTap,
   });
@@ -16,7 +16,7 @@ class FutsalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,  // Action to execute when the card is tapped
+      onTap: onTap, // Action to execute when the card is tapped
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -51,7 +51,7 @@ class FutsalCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      futsal.timeSlots,
+                      'Available times: ${futsal.timeSlots.join(' | ')}',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],

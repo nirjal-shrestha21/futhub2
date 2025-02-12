@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://192.168.31.138:4001/api';
+  static const String baseUrl = 'http://192.168.31.201:4001/api';
 
   // Register function
   Future<Map<String, dynamic>> register({

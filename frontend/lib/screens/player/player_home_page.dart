@@ -15,8 +15,6 @@ class PlayerHomePage extends StatefulWidget {
 }
 
 class _PlayerHomePageState extends State<PlayerHomePage> {
-  final String apiUrl = 'http://localhost:4001/api/futsals';
-
   Future<List<Futsal>> fetchFutsals() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -28,7 +26,7 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
           'Content-Type': 'application/json',
         },
       );
-      debugPrint('Response Body: ${response.body}');
+      debugPrint('Response data: ${response.body}');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
@@ -49,7 +47,7 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
         title: const Text('Booking Confirmation',
             style: TextStyle(color: Colors.orange)),
         content: Text(
-          'You have successfully booked ${futsal.location ?? "this futsal"}.',
+          'You have successfully booked ${futsal.name ?? "this futsal"}.',
           style: const TextStyle(color: Colors.white),
         ),
         actions: [
@@ -108,14 +106,8 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
                 child: CircularProgressIndicator(color: Colors.orange));
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error: ${snapshot.error}',
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
               child: Text(
                 'No futsals available',
@@ -139,28 +131,53 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            futsal.location ?? 'Unknown Futsal',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              futsal.name ?? 'Unknown Futsal',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Location: ${futsal.location ?? 'Unknown'}',
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              'Location: ${futsal.location ?? 'Unknown'}',
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                            const SizedBox(height: 4),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 4,
+                              children: futsal.timeSlots
+                                  .map((slot) => Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[800],
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          slot,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[400],
+                                          ),
+                                        ),
+                                      ))
+                                  .toList(),
+                            ),
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 16),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
                             '\$${futsal.price ?? 'N/A'}',

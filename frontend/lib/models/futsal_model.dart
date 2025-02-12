@@ -1,29 +1,38 @@
 class Futsal {
   final String id;
+  final String owner;
   final String name;
   final String location;
-  final double price;
-  final String ownerId;
-  final String timeSlots;
+  final int price;
+  final List<String> facilities;
+  final List<String> timeSlots;
+  final String approvalStatus;
+  final DateTime createdAt;
 
   Futsal({
     required this.id,
+    required this.owner,
     required this.name,
     required this.location,
     required this.price,
-    required this.ownerId,
-    required this.timeSlots
+    required this.facilities,
+    required this.timeSlots,
+    required this.approvalStatus,
+    required this.createdAt,
   });
 
   // Convert JSON to Futsal object
   factory Futsal.fromJson(Map<String, dynamic> json) {
     return Futsal(
       id: json['_id'],
-      location: json['location'],
+      owner: json['owner'],
       name: json['name'],
+      location: json['location'],
       price: json['price'],
-      ownerId: json['owner_id'],
-      timeSlots: json['timeSlots']
+      facilities: List<String>.from(json['facilities'] ?? []),
+      timeSlots: List<String>.from(json['timeSlots'] ?? []),
+      approvalStatus: json['approvalStatus'],
+      createdAt: DateTime.parse(json['createdAt']),
     );
   }
 
@@ -32,10 +41,13 @@ class Futsal {
     return {
       'id': id,
       'location': location,
-      'name':name,
+      'name': name,
       'price': price,
-      'owner_id': ownerId,
-      'timeSlots':timeSlots
+      'owner': owner,
+      'facilities': facilities,
+      'timeSlots': timeSlots,
+      'approvalStatus': approvalStatus,
+      'createdAt': createdAt.toIso8601String(),
     };
   }
 }

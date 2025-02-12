@@ -17,6 +17,7 @@ class _SplashPageState extends State<SplashPage> {
         Navigator.pushReplacementNamed(context, '/landing');
       } else {
         final userRole = prefs.getString('userRole');
+        debugPrint('User Role: $userRole');
         if (userRole == "player") {
           Navigator.pushReplacementNamed(context, '/browse_futsals');
         } else if (userRole == "futsal_owner") {
