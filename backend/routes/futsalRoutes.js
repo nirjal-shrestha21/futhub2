@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/add', authenticateToken, checkFutsalOwner, addFutsal);
 router.put('/edit/:futsalId', authenticateToken, checkFutsalOwner, editFutsal);
 router.delete('/delete/:futsalId', authenticateToken, checkFutsalOwner, deleteFutsal);
-router.get('/view-futals', authenticateToken, checkFutsalOwner, getAllFutsalsByOwner);
+router.get('/view-futsal', authenticateToken, checkFutsalOwner, getAllFutsalsByOwner);
 
 // View all futsals (For Player)
 router.get('/view', authenticateToken, checkPlayer, getFutsals);
