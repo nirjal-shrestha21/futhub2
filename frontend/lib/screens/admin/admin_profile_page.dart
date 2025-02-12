@@ -44,7 +44,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
     }
 
     final response = await http.put(
-      Uri.parse('http://localhost:4001/api/updateProfile'),
+      Uri.parse('http://127.0.0.1:4001/api/updateProfile'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

@@ -15,7 +15,7 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  final String apiUrl = 'http://localhost:4001/api/admin/analytics';
+  final String apiUrl = 'http://127.0.0.1:4001/api/admin/analytics';
   late ApiService _apiService;
   Map<String, dynamic> _dashboardData = {};
   bool _isLoading = true;

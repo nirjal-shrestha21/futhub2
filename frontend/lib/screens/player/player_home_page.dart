@@ -17,6 +17,8 @@ class PlayerHomePage extends StatefulWidget {
 }
 
 class _PlayerHomePageState extends State<PlayerHomePage> {
+  final String apiUrl = 'http://127.0.0.1:4001/api/futsals';
+
   Future<List<Futsal>> fetchFutsals() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');

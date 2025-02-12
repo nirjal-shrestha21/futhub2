@@ -29,12 +29,12 @@ class MyApp extends StatelessWidget {
         '/admin_dashboard': (context) => const AdminDashboard(),
         '/admin-players': (context) => const AdminPlayersPage(),
         '/futsal_owner_dashboard': (context) => const FutsalOwnerDashboard(),
-        '/add-futsal': (context) => const AddFutsalPage(),
+        '/add_futsal': (context) => const AddFutsalPage(),
         '/browse_futsals': (context) => const PlayerHomePage(),
-        '/futsal-details': (context) => const FutsalDetailsPage(),
+        '/futsal_details': (context) => const FutsalDetailsPage(),
         '/payment': (context) => const PaymentPage(),
         '/player-team-search': (context) => const PlayerTeamSearchPage(),
-        '/player-booking-details': (context) =>
+        '/player_booking_details': (context) =>
             const PlayerBookingDetailsPage(),
       },
       //home: const MyHomePage(title: 'Flutter Demo Home Page'),

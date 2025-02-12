@@ -49,7 +49,7 @@ class _PaymentPageState extends State<PaymentPage> {
     final futsalId = ModalRoute.of(context)?.settings.arguments as String?;
 
     // Example API endpoint
-    final apiUrl = 'http://localhost:4001/api/bookings';
+    final apiUrl = 'http://127.0.0.1:4001/api/bookings';
     String? token = await AuthService().getToken();
     print(token);
     print(futsalId);
