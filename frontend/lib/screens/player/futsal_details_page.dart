@@ -1,12 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
-import '../../services/auth_service.dart';
+import '../../models/futsal_model.dart';
 
 class FutsalDetailsPage extends StatefulWidget {
-  const FutsalDetailsPage({super.key});
+  const FutsalDetailsPage({super.key, this.futsal});
+
+  final Futsal? futsal;
 
   @override
   _FutsalDetailsPageState createState() => _FutsalDetailsPageState();
@@ -17,11 +16,11 @@ class _FutsalDetailsPageState extends State<FutsalDetailsPage> {
   bool hasError = false;
   List<dynamic> futsalList = [];
 
-  Future<void> fetchFutsalDetails() async {
+  /*Future<void> fetchFutsalDetails() async {
     try {
       String? token = await AuthService().getToken();
       final response = await http.get(
-        Uri.parse('${AuthService.baseUrl}/futsals/view'),
+        Uri.parse('${AuthService.baseUrl}/futsals/${widget.futsalID}'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -54,12 +53,12 @@ class _FutsalDetailsPageState extends State<FutsalDetailsPage> {
         isLoading = false;
       });
     }
-  }
+  }*/
 
   @override
   void initState() {
     super.initState();
-    fetchFutsalDetails();
+    // fetchFutsalDetails();
   }
 
   @override
@@ -69,7 +68,7 @@ class _FutsalDetailsPageState extends State<FutsalDetailsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Futsal Listings'),
+        title: const Text('Futsal Details'),
         backgroundColor: Colors.deepPurple,
       ),
       body: isLoading

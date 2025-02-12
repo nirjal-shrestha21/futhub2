@@ -7,6 +7,8 @@ import 'package:futhub2/services/auth_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'futsal_details_page.dart';
+
 class PlayerHomePage extends StatefulWidget {
   const PlayerHomePage({super.key});
 
@@ -189,10 +191,12 @@ class _PlayerHomePageState extends State<PlayerHomePage> {
                           const SizedBox(height: 8),
                           ElevatedButton(
                             onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                '/futsal-details',
-                              );
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => FutsalDetailsPage(
+                                            futsal: futsal,
+                                          )));
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.orange,
