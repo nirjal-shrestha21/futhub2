@@ -21,7 +21,7 @@ class _FutsalDetailsPageState extends State<FutsalDetailsPage> {
     try {
       String? token = await AuthService().getToken();
       final response = await http.get(
-        Uri.parse('http://localhost:4001/api/futsals/view'),
+        Uri.parse('http://127.0.0.1:4001/api/futsals/view'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
