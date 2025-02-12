@@ -1,15 +1,18 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:futhub2/services/khalti_services.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:khalti_flutter/khalti_flutter.dart';
+import 'package:khalti/khalti.dart';
 
-import '../../services/auth_service.dart'; // Import http package
+import '../../services/auth_service.dart';
+import '../../services/khalti_services.dart'; // Import http package
 
 class PaymentPage extends StatefulWidget {
-  const PaymentPage({super.key});
+  const PaymentPage({super.key, this.amount = 0, this.futsalId});
+
+  final int amount;
+  final String? futsalId;
 
   @override
   _PaymentPageState createState() => _PaymentPageState();
@@ -178,13 +181,6 @@ class _PaymentPageState extends State<PaymentPage> {
             ),
             const SizedBox(height: 20),
             _buildPaymentButton(
-              label: "Pay with eSewa",
-              imageUrl:
-                  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAACUCAMAAABV5TcGAAAAsVBMVEX///9gu0coKT0AAABdukP8/P0lJjsAACAhIjgdHjWpqa9buUAaGzMqKz4AACPy8vMAABwGCSnc3N7Q0NO9vcFdXWrl5ecAAAoAACbG5b+xsbZJtCdWuDkAABjGxsqamqGw2qWKipL2+/UPES2RzYM0NUYAABLQ6cp3d4Fsv1Zvb3k9Pk5ywV5ISFbq9ehRUl+JynrZ7dW637Kf05N8xWk+sRJ/f38ZGSsTEylERERPT1HtBU3YAAALoklEQVR4nO2ba5uiuBaFEQEDBJGrFCKIiGWBiFrWmT7n//+wk3AzRLRmpsuZqZ68H/ppEShY7Oy9sokcx2AwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaD8c9ijfkD++uIp13M38r65f2yr7gcV6+/QxNXycoCUWaRiT9b9i+jzPq8HwmCqqrNP8Lo+Pr4CDcDACbe1EugLIM01s2idP+ai302h80iQAqQCOoieH8QIj5MQGKUu3jnQEOWQDIxkuKXkOPwjsQY3SIsFuc7gojRFMi8ItafLEcGGs+D/BeQY/0qBANa1Cz2p6FjRCWRYElkCj+FPC/x31+Ow+pjKDJa1GAoQEIN9NRAAZJDXkq+vRyH4+KBGHjEBO8H+iDdSSQ57G+zNZlfWn/VZT+J0+X+QOn02FB6iP5SS3ZUURWjhN9SEn03Thf1MzVwjaH00FPAT336XG6WTHzxL7v0J3A40moIahDcKCRQFdeaa5J0Gwh2Oom+sxzr9/5IUReLYH/c7IMFrUhwJo+Lprxc3KYJPdvG31mOl14WDT5G5wOOgjX3+kbn1wU5XBzIy6V5e77I231jOQ497xUcyTteUXqoI+LLXNZAOlBE3LL4xpMWcqgIoxcUFofV8biqVXmlfOqCGC65jCzGUBH5T/l95TgQAaBi87l+/wiCYIGFQbyolB7XIwuZ5weLyPcVg+MIx6G+odnrujFkqlr5cjrPBqvuSCfRNJh9ewfagwwOYcURYyc4VmX1tO/VF+GaPWKP5/nkxnh8a4iHr+L7J+6+KSOrfngIL+2h9hbJIef233btT2AkXJ87vtHVtd/xUafN17de9hCO7aEuloOHufJ3XfvXQ4wVdY83bHAsIE+6+AgudXRQnlXYt9ZUR8YD66Htfpn8QYyEKkkeLovFx2K/Wb0eDs1tncHiZ2P//Mno7UtZf77U0xWzxlGei3lgBzcYAAkZaFbzywF1PQQ2TT31mH5M1N2dRz0TATf7wAEAAAAElFTkSuQmCC',
-              paymentMethod: 'eSewa',
-            ),
-            const SizedBox(height: 20),
-            _buildPaymentButton(
               label: "Pay with Khalti",
               imageUrl:
                   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAACUCAMAAABV5TcGAAAAsVBMVEX///9gu0coKT0AAABdukP8/P0lJjsAACAhIjgdHjWpqa9buUAaGzMqKz4AACPy8vMAABwGCSnc3N7Q0NO9vcFdXWrl5ecAAAoAACbG5b+xsbZJtCdWuDkAABjGxsqamqGw2qWKipL2+/UPES2RzYM0NUYAABLQ6cp3d4Fsv1Zvb3k9Pk5ywV5ISFbq9ehRUl+JynrZ7dW637Kf05N8xWk+sRJ/f38ZGSsTEylERERPT1HtBU3YAAALoklEQVR4nO2ba5uiuBaFEQEDBJGrFCKIiGWBiFrWmT7n//+wk3AzRLRmpsuZqZ68H/ppEShY7Oy9sokcx2AwGAwGg8FgMBgMBoPBYDAYDAaDwWAwGAwGg8FgMBgMBoPBYDAYDAaD8c9ijfkD++uIp13M38r65f2yr7gcV6+/QxNXycoCUWaRiT9b9i+jzPq8HwmCqqrNP8Lo+Pr4CDcDACbe1EugLIM01s2idP+ai302h80iQAqQCOoieH8QIj5MQGKUu3jnQEOWQDIxkuKXkOPwjsQY3SIsFuc7gojRFMi8ItafLEcGGs+D/BeQY/0qBANa1Cz2p6FjRCWRYElkCj+FPC/x31+Ow+pjKDJa1GAoQEIN9NRAAZJDXkq+vRyH4+KBGHjEBO8H+iDdSSQ57G+zNZlfWn/VZT+J0+X+QOn02FB6iP5SS3ZUURWjhN9SEn03Thf1MzVwjaH00FPAT336XG6WTHzxL7v0J3A40moIahDcKCRQFdeaa5J0Gwh2Oom+sxzr9/5IUReLYH/c7IMFrUhwJo+Lprxc3KYJPdvG31mOl14WDT5G5wOOgjX3+kbn1wU5XBzIy6V5e77I231jOQ497xUcyTteUXqoI+LLXNZAOlBE3LL4xpMWcqgIoxcUFofV8biqVXmlfOqCGC65jCzGUBH5T/l95TgQAaBi87l+/wiCYIGFQbyolB7XIwuZ5weLyPcVg+MIx6G+odnrujFkqlr5cjrPBqvuSCfRNJh9ewfagwwOYcURYyc4VmX1tO/VF+GaPWKP5/nkxnh8a4iHr+L7J+6+KSOrfngIL+2h9hbJIef233btT2AkXJ87vtHVtd/xUafN17de9hCO7aEuloOHufJ3XfvXQ4wVdY83bHAsIE+6+AgudXRQnlXYt9ZUR8YD66Htfpn8QYyEKkkeLovFx2K/Wb0eDs1tncHiZ2P//Mno7UtZf77U0xWzxlGei3lgBzcYAAkZaFbzywF1PQQ2TT31mH5M1N2dRz0TATf7wAEAAAAElFTkSuQmCC',
@@ -201,22 +197,78 @@ class _PaymentPageState extends State<PaymentPage> {
       required String imageUrl,
       required String paymentMethod}) {
     return ElevatedButton(
-      onPressed: () {
-        // makePayment(paymentMethod);
-        debugPrint('Payment method: $paymentMethod');
-        KhaltiRepository().makePayment(
-          context: context,
-          amount: 2000,
-          productIdentity: "khalti",
-          productName: "Futsal",
-          onSuccess: (PaymentSuccessModel response) {
-            debugPrint('Payment success: $response');
+      onPressed: () async {
+        if (selectedDate == null || selectedTimeSlot == null) {
+          _showErrorSnackbar();
+          return;
+        }
+        final futsalId = widget.futsalId;
+        const apiUrl = '${AuthService.baseUrl}/bookings';
+        String? token = await AuthService().getToken();
+        final data = json.encode({
+          'futsalId': futsalId ?? '',
+          'paymentMethod': paymentMethod,
+          'bookingDate': DateFormat('yyyy-MM-dd').format(selectedDate!),
+          'timeSlot': selectedTimeSlot!,
+          'status': 'confirmed'
+        });
+
+        debugPrint('Data: $data');
+        final response = await http.post(
+          Uri.parse(apiUrl),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
           },
-          onFailure: (PaymentFailureModel response) {
-            debugPrint('Payment failure: $response');
-          },
-          onCancel: () {},
+          body: data,
         );
+        print(response.statusCode);
+
+        if (response.statusCode == 201) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Booking successful!"),
+              backgroundColor: Colors.green,
+            ),
+          );
+          KhaltiRepository().makePayment(
+            context: context,
+            amount: widget.amount * 100,
+            productIdentity: "court",
+            productName: "Futsal",
+            onSuccess: (PaymentSuccessModel response) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Payment successful"),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            onFailure: (PaymentFailureModel response) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Payment failed"),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            },
+            onCancel: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Payment canceled"),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            },
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(response.body),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.deepPurple,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:futhub2/screens/player/payment_page.dart';
 
 import '../../models/futsal_model.dart';
 
@@ -219,12 +220,14 @@ class _FutsalDetailsPageState extends State<FutsalDetailsPage> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        // TODO: Implement booking functionality
-                        Navigator.pushNamed(
-                          context,
-                          '/payment',
-                          arguments: widget.futsal!.id,
-                        );
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PaymentPage(
+                                amount: widget.futsal!.price,
+                                futsalId: widget.futsal!.id,
+                              ),
+                            ));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
