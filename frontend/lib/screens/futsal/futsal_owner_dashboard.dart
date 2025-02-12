@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:futhub2/screens/futsal/add_futsal.dart';
 import 'package:futhub2/screens/futsal/book_own_futsal_page.dart';
-import 'package:futhub2/screens/futsal/history_page.dart';
-import 'package:futhub2/screens/futsal/manage_bookings_page.dart';
 import 'package:futhub2/screens/futsal/profile_page.dart';
+import 'package:futhub2/screens/futsal/view_futsal.dart';
 import 'package:futhub2/services/auth_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -53,7 +52,6 @@ class _FutsalOwnerDashboardState extends State<FutsalOwnerDashboard> {
       );
 
       if (response.statusCode == 200) {
-        print('Response: ${response.body}'); // Debugging response
         setState(() {
           futsals = jsonDecode(response.body);
           isLoading = false;
@@ -75,11 +73,10 @@ class _FutsalOwnerDashboardState extends State<FutsalOwnerDashboard> {
   @override
   Widget build(BuildContext context) {
     int totalBookings = futsals.length; // Total number of booking records
-    
+
     // Get unique futsal IDs to count total futsals
-    Set<String> uniqueFutsalIds = futsals
-        .map((booking) => booking['futsalId']['_id'].toString())
-        .toSet();
+    Set<String> uniqueFutsalIds =
+        futsals.map((booking) => booking['futsalId']['_id'].toString()).toSet();
     int totalFutsals = uniqueFutsalIds.length;
 
     return Scaffold(
@@ -145,11 +142,26 @@ class _FutsalOwnerDashboardState extends State<FutsalOwnerDashboard> {
               ),
             ),
             _buildDrawerItem(context, "Add Futsal", const AddFutsalPage()),
-            _buildDrawerItem(
-                context, "Manage Bookings", const ManageBookingsPage()),
+            /*_buildDrawerItem(
+                context, "Manage Bookings", const ManageBookingsPage()),*/
             _buildDrawerItem(
                 context, "Book Own Futsal", const BookOwnFutsalPage()),
-            _buildDrawerItem(context, "View History", const HistoryPage()),
+            _buildDrawerItem(context, "View Futsal", const ViewFutsal()),
+            const SizedBox(
+              height: 40,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.clear();
+                Navigator.pushReplacementNamed(context, '/login');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: Text('Logout'),
+            )
           ],
         ),
       ),
