@@ -127,30 +127,23 @@ class _BookOwnFutsalPageState extends State<BookOwnFutsalPage> {
                           cells: [
                             DataCell(Text(booking['_id']?.toString() ?? 'N/A',
                                 style: const TextStyle(color: Colors.white))),
-                            // Booking ID
-                            DataCell(Text(booking['name']?.toString() ?? 'N/A',
+                            DataCell(Text(
+                                booking['futsalId']?['name']?.toString() ?? 'N/A',
                                 style: const TextStyle(color: Colors.white))),
-                            // Futsal name
                             DataCell(Text(
                                 booking['user']?['name']?.toString() ?? 'N/A',
                                 style: const TextStyle(color: Colors.white))),
-                            // User name
                             DataCell(Text(
                                 booking['user']?['email']?.toString() ?? 'N/A',
                                 style: const TextStyle(color: Colors.white))),
-                            // User email
                             DataCell(Text(booking['bookingDate'] ?? 'N/A',
                                 style: const TextStyle(color: Colors.white))),
-                            // Booking Date
                             DataCell(Text(booking['timeSlot'] ?? 'N/A',
                                 style: const TextStyle(color: Colors.white))),
-                            // Time Slot
                             DataCell(Text(booking['paymentMethod'] ?? 'N/A',
                                 style: const TextStyle(color: Colors.white))),
-                            // Payment Method
                             DataCell(Text(booking['status'] ?? 'N/A',
                                 style: const TextStyle(color: Colors.white))),
-                            // Status
                           ],
                         );
                       }).toList(),
