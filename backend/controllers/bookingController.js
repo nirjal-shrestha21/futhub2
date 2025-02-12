@@ -20,6 +20,11 @@ export const createBooking = async (req, res) => {
     if (!userExists) {
       return res.status(404).json({ message: 'User not found' });
     }
+    const existingBooking= await Booking.findOne({futsalId,bookingDate,timeSlot});
+    if(existingBooking){
+      return res.status(400).json({message:'Booking already exists for this time slot'});
+    }
+
 
     // Create a new booking in the database
     const booking = await Booking.create({
