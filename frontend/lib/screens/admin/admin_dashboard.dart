@@ -255,41 +255,140 @@ class OwnersListPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Owners', style: TextStyle(color: Colors.orange)),
         backgroundColor: const Color(0xFF1E1E1E),
+        iconTheme: const IconThemeData(color: Colors.orange),
       ),
       body: FutureBuilder<List<User>>(
-        future: _apiService.fetchOwners(), // Uses the fetchOwners() from ApiService
+        future: _apiService.fetchOwners(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}',
-                style: const TextStyle(color: Colors.red)));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
-                child: Text('No Owners Found',
-                    style: TextStyle(color: Colors.white)));
-          } else {
-            final owners = snapshot.data!;
-            return ListView.builder(
-              itemCount: owners.length,
-              itemBuilder: (context, index) {
-                final owner = owners[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(owner.profilePicture?? 'https://example.com/default-profile.png',),
-                  ),
-                  title: Text(owner.name,
-                      style: const TextStyle(color: Colors.white)),
-                  subtitle: Text(owner.email,
-                      style: const TextStyle(color: Colors.white70)),
-                  // Optionally, navigate to a detailed view if needed.
-                  onTap: () {
-                    // Navigator.push(context, MaterialPageRoute(builder: (context) => UserDetailsPage(userId: owner.id)));
-                  },
-                );
-              },
+              child: CircularProgressIndicator(color: Colors.orange),
             );
           }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 60),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error: ${snapshot.error}',
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Refresh the page
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const OwnersListPage()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                    ),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.person_off, color: Colors.orange, size: 60),
+                  SizedBox(height: 16),
+                  Text(
+                    'No Owners Found',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final owners = snapshot.data!;
+          return ListView.builder(
+            itemCount: owners.length,
+            itemBuilder: (context, index) {
+              final owner = owners[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                color: const Color(0xFF1E1E1E),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.orange,
+                    backgroundImage: owner.profilePicture != null
+                        ? NetworkImage(owner.profilePicture!)
+                        : null,
+                    child: owner.profilePicture == null
+                        ? const Icon(Icons.person, color: Colors.white)
+                        : null,
+                  ),
+                  title: Text(
+                    owner.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        owner.email,
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                      Text(
+                        owner.phoneNumber,
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    // Show owner details in a modal bottom sheet
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: const Color(0xFF1E1E1E),
+                      builder: (context) => Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Owner Details',
+                              style: const TextStyle(
+                                color: Colors.orange,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text('ID: ${owner.id}',
+                                style: const TextStyle(color: Colors.white)),
+                            Text('Name: ${owner.name}',
+                                style: const TextStyle(color: Colors.white)),
+                            Text('Email: ${owner.email}',
+                                style: const TextStyle(color: Colors.white)),
+                            Text('Phone: ${owner.phoneNumber}',
+                                style: const TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          );
         },
       ),
     );
@@ -313,13 +412,15 @@ class PlayersListPage extends StatelessWidget {
         backgroundColor: const Color(0xFF1E1E1E),
       ),
       body: FutureBuilder<List<User>>(
-        future: _apiService.fetchPlayers(), // Uses the fetchPlayers() from ApiService
+        future: _apiService
+            .fetchPlayers(), // Uses the fetchPlayers() from ApiService
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}',
-                style: const TextStyle(color: Colors.red)));
+            return Center(
+                child: Text('Error: ${snapshot.error}',
+                    style: const TextStyle(color: Colors.red)));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
                 child: Text('No Players Found',
@@ -332,7 +433,10 @@ class PlayersListPage extends StatelessWidget {
                 final player = players[index];
                 return ListTile(
                   leading: CircleAvatar(
-                    backgroundImage: NetworkImage(player.profilePicture?? 'https://example.com/default-profile.png',),
+                    backgroundImage: NetworkImage(
+                      player.profilePicture ??
+                          'https://example.com/default-profile.png',
+                    ),
                   ),
                   title: Text(player.name,
                       style: const TextStyle(color: Colors.white)),

@@ -37,7 +37,10 @@ class OwnersListPage extends StatelessWidget {
                 final owner = owners[index];
                 return ListTile(
                   leading: CircleAvatar(
-                    backgroundImage: NetworkImage(owner.profilePicture?? 'https://example.com/default-profile.png',),
+                    backgroundImage: NetworkImage(
+                      owner.profilePicture ??
+                          'https://example.com/default-profile.png',
+                    ),
                   ),
                   title: Text(owner.name,
                       style: const TextStyle(color: Colors.white)),
@@ -48,8 +51,7 @@ class OwnersListPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            UserDetailsPage(userId: owner.id),
+                        builder: (context) => UserDetailsPage(userId: owner.id),
                       ),
                     );
                   },

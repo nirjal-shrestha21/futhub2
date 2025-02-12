@@ -60,37 +60,70 @@ class ApiService {
   // Fetch all users and filter by role = 'futsal_owner'
   Future<List<User>> fetchOwners() async {
     String? token = await _getToken();
-    final response = await http.get(
-      Uri.parse('$baseUrl/admin/users'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+    try {
+      print('Fetching owners...');
+      final response = await http.get(
+        Uri.parse('$baseUrl/admin/users'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      final decoded = json.decode(response.body);
-      List<dynamic> jsonData;
+      print('Response status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
-      // Check if the decoded JSON is a Map with the key "owners"
-      if (decoded is Map && decoded.containsKey("owners")) {
-        jsonData = decoded["owners"] as List<dynamic>;
-      }
-      // Otherwise, if it's directly a list, use it (fallback)
-      else if (decoded is List) {
-        jsonData = decoded;
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        print('Decoded response: $decoded');
+
+        List<dynamic> jsonData;
+
+        // Handle different response structures
+        if (decoded is Map) {
+          if (decoded.containsKey("users")) {
+            jsonData = decoded["users"] as List<dynamic>;
+          } else if (decoded.containsKey("owners")) {
+            jsonData = decoded["owners"] as List<dynamic>;
+          } else {
+            print(
+                'Unexpected response structure. Keys found: ${decoded.keys.toList()}');
+            jsonData = [];
+          }
+        } else if (decoded is List) {
+          jsonData = decoded;
+        } else {
+          print('Unexpected response type: ${decoded.runtimeType}');
+          jsonData = [];
+        }
+
+        print('Parsed JSON data length: ${jsonData.length}');
+
+        // Map the list to User objects with error handling
+        List<User> users = [];
+        for (var json in jsonData) {
+          try {
+            final user = User.fromJson(json);
+            if (user.role == 'futsal_owner') {
+              users.add(user);
+            }
+          } catch (e, stackTrace) {
+            print('Error parsing user: $e');
+            print('Stack trace: $stackTrace');
+            print('Problematic JSON: $json');
+          }
+        }
+
+        print('Final users list length: ${users.length}');
+        return users;
       } else {
         throw Exception(
-            "Expected a list of users in the response, but got null or an unexpected structure.");
+            'Failed to load owners. Status code: ${response.statusCode}');
       }
-
-      // Map the list to User objects
-      List<User> users = jsonData.map((json) => User.fromJson(json)).toList();
-
-      // (Optionally) Filter for futsal owners; if the JSON structure already separates owners, this may be redundant.
-      return users.where((user) => user.role == 'futsal_owner').toList();
-    } else {
-      throw Exception('Failed to load owners');
+    } catch (e, stackTrace) {
+      print('Error in fetchOwners: $e');
+      print('Stack trace: $stackTrace');
+      rethrow;
     }
   }
 
